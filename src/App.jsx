@@ -6,6 +6,7 @@ import Footer from "./Components/Footer"; // Importing Footer component
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Gallery from "./Components/Gallary";
 import ContactSection from "./Components/Contactsection";
+import Shop from "./Components/Shop";
 
 const App = () => {
   return (
@@ -19,7 +20,10 @@ const App = () => {
         {/* Route for ContactSection */}
         <Route path="/contact" element={<ContactSection/>} />
       </Routes>
-
+      <Routes>
+        {/* Route for the shop page */}
+        <Route path="/shop" element={<Shop />} />
+      </Routes>
       <Footer /> {/* Footer is always visible */}
     </Router>
   );
