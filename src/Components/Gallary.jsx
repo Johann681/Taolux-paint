@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+// --- Import all your images (as you had originally) ---
 
 // Living Room images
 import livingroom1 from "../assets/livingroom1.jpg";
@@ -76,6 +78,8 @@ import bathroom8 from "../assets/toilet8.jpg";
 const Gallery = () => {
   const categories = ["Outdoor", "Kitchen", "Bedroom", "Living Room", "Toilet"];
   const [selectedCategory, setSelectedCategory] = useState("Living Room");
+  const [loading, setLoading] = useState(false);
+  const [filteredImages, setFilteredImages] = useState([]);
 
   const images = [
     // Living Room
@@ -152,29 +156,41 @@ const Gallery = () => {
     { src: bathroom8, category: "Toilet" },
   ];
 
-  const filteredImages = images.filter((image) => image.category === selectedCategory);
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => {
+      const newImages = images.filter((img) => img.category === selectedCategory);
+      setFilteredImages(newImages);
+      setLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [selectedCategory]);
 
   return (
     <div className="p-4 sm:p-6 lg:p-12 max-w-7xl mx-auto">
-      {/* Category Nav */}
+      {/* Category Navigation */}
       <div className="flex flex-wrap justify-center gap-3 mb-10">
         {categories.map((category) => (
           <button
             key={category}
+            onClick={() => setSelectedCategory(category)}
             className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
               selectedCategory === category
                 ? "bg-blue-600 text-white shadow-md"
                 : "bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white"
             }`}
-            onClick={() => setSelectedCategory(category)}
           >
             {category}
           </button>
         ))}
       </div>
 
-      {/* Image Grid */}
-      {filteredImages.length > 0 ? (
+      {/* Loading or Images */}
+      {loading ? (
+        <div className="flex justify-center items-center h-48">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-600 border-solid"></div>
+        </div>
+      ) : (
         <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {filteredImages.map((image, index) => (
             <div
@@ -185,13 +201,10 @@ const Gallery = () => {
                 src={image.src}
                 alt={`${selectedCategory} ${index + 1}`}
                 className="w-full h-auto object-cover transition-transform duration-300 hover:scale-105"
+                loading="lazy"
               />
             </div>
           ))}
-        </div>
-      ) : (
-        <div className="text-center text-gray-500 mt-10">
-          No images available for this category.
         </div>
       )}
     </div>
