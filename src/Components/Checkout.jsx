@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { usePaintCart } from "../Context/PaintCart";
+import { usePaintCart } from "../Context/Paintcart.jsx";
 
 const ORDERS_STORAGE_KEY = "paint-orders";
 
@@ -160,7 +160,7 @@ export default function CheckoutPage() {
 
       <p className="mt-4 text-sm text-gray-600">
         Payment is done via mobile transfer. After placing your order, you will be
-        redirected to WhatsApp Business to confirm payment with us.
+        redirected to WhatsApp Business to confirm payment with us now.
       </p>
     </div>
   );

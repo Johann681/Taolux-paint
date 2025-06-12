@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { HexColorPicker } from "react-colorful";
-import { usePaintCart } from "../Context/PaintCart";
+import { usePaintCart } from "../Context/Paintcart.jsx";
 
 const paintSizes = [
   { size: "5L", price: 14000 },
@@ -58,7 +58,6 @@ export default function Shop() {
         total: price * quantity,
       };
     });
-console.log("👉 Sending to cart:", cartItems);
     addToCart(cartItems);
     setShowPopup(true);
     setTimeout(() => setShowPopup(false), 2500);

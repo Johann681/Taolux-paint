@@ -1,5 +1,5 @@
 import React from "react";
-import { usePaintCart } from "../Context/PaintCart";
+import { usePaintCart } from "../Context/Paintcart.jsx";
 import { useNavigate } from "react-router-dom";
 
 export default function CartPage() {
@@ -62,7 +62,7 @@ export default function CartPage() {
                   onClick={clearCart}
                   className="bg-red-100 text-red-600 font-medium px-4 py-2 rounded-lg hover:bg-red-200 transition"
                 >
-                  Clear Cart
+                  Clear Cartie
                 </button>
                 <button
                   onClick={handleCheckout}

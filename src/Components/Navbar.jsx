@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Menu, X, Home, ShoppingBag, Phone, User2, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
-import { usePaintCart } from "../Context/PaintCart"; // ✅ Import your cart context
+import { usePaintCart } from "../Context/Paintcart.jsx"; // ✅ Import your cart context
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
