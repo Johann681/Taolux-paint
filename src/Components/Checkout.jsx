@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { usePaintCart } from "../Context/Paintcart.jsx";
+import { usePaintCart } from "../Context/PaintCart.jsx";
 
 const ORDERS_STORAGE_KEY = "paint-orders";
 

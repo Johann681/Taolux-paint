@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { HexColorPicker } from "react-colorful";
-import { usePaintCart } from "../Context/Paintcart.jsx";
+import { usePaintCart } from "../Context/PaintCart.jsx";
 
 const paintSizes = [
   { size: "5L", price: 14000 },
