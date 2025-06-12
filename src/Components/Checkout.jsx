@@ -29,20 +29,24 @@ export default function CheckoutPage() {
   }, [cartItems]);
 
   const handleConfirm = () => {
-    if (!orderName.trim() || orderName.trim().length < 3) {
+    const trimmedName = orderName.trim();
+
+    if (trimmedName.length < 3) {
       setError("Order name must be at least 3 characters");
       return;
     }
+
     if (cartItems.length === 0) {
       setError("Your cart is empty");
       return;
     }
+
     setError(null);
     setIsSubmitting(true);
 
     const order = {
       id: Date.now(),
-      name: orderName.trim(),
+      name: trimmedName,
       items: cartItems,
       total: cartTotal,
       date: new Date().toISOString(),
@@ -63,35 +67,29 @@ export default function CheckoutPage() {
       `Total Amount: ₦${order.total.toLocaleString("en-NG")}`,
       `Please assist with mobile transfer payment. Thank you!`,
     ];
-    const message = messageLines.join("\n");
-    const encodedMessage = encodeURIComponent(message);
 
+    const encodedMessage = encodeURIComponent(messageLines.join("\n"));
     window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, "_blank");
 
     setIsSubmitting(false);
     setOrderName("");
-    setOrderPlaced(true); // Show confirmation message now
+    setOrderPlaced(true);
   };
 
   if (orderPlaced) {
     return (
       <div className="min-h-screen pt-24 px-4 max-w-3xl mx-auto text-center">
         <h1 className="text-3xl font-bold mb-6 text-green-700">Order Placed Successfully!</h1>
-        <p className="text-lg mb-4">
-          Your order is being reviewed. You will receive a message within 24 hours.
-        </p>
-        <p className="text-gray-600">Thank you for shopping with us!</p>
+        <p className="text-lg mb-4">We are reviewing your order. You’ll be contacted shortly via WhatsApp.</p>
+        <p className="text-gray-600">Thank you for choosing Taolux Paints!</p>
       </div>
     );
   }
-
-  // Normal checkout form UI goes here (your existing form JSX)
 
   return (
     <div className="min-h-screen pt-24 px-4 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Checkout</h1>
 
-      {/* Order Name Input */}
       <label htmlFor="orderName" className="block mb-2 font-semibold">
         Name your order <span className="text-red-600">*</span>
       </label>
@@ -107,13 +105,8 @@ export default function CheckoutPage() {
         disabled={isSubmitting}
         maxLength={50}
       />
-      {error && (
-        <p className="text-red-600 text-sm mb-4" role="alert">
-          {error}
-        </p>
-      )}
+      {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
 
-      {/* Order Summary */}
       <section className="mb-6">
         <h2 className="text-xl font-semibold mb-3">Order Summary</h2>
         {cartItems.length === 0 ? (
@@ -144,7 +137,6 @@ export default function CheckoutPage() {
         </p>
       </section>
 
-      {/* Confirm Button */}
       <button
         onClick={handleConfirm}
         disabled={isSubmitting || cartItems.length === 0}
@@ -153,14 +145,12 @@ export default function CheckoutPage() {
             ? "bg-gray-400 cursor-not-allowed"
             : "bg-green-600 hover:bg-green-700"
         }`}
-        aria-disabled={isSubmitting || cartItems.length === 0}
       >
         {isSubmitting ? "Placing Order..." : "Confirm Order & Pay via WhatsApp"}
       </button>
 
       <p className="mt-4 text-sm text-gray-600">
-        Payment is done via mobile transfer. After placing your order, you will be
-        redirected to WhatsApp Business to confirm payment with us now.
+        Payment is made via mobile transfer. After placing your order, you'll be redirected to WhatsApp to finalize your request.
       </p>
     </div>
   );
