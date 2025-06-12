@@ -1,101 +1,114 @@
 import React, { useState } from "react";
+import { HexColorPicker } from "react-colorful";
+import { usePaintCart } from "../Context/PaintCart";
 
-const paintTypes = ["Gloss", "Satin", "Emulsion"];
-const paintSizes = ["1L", "2.5L", "5L", "10L"];
-const presetColors = [
-  { name: "White", hex: "#FFFFFF" },
-  { name: "Black", hex: "#000000" },
-  { name: "Red", hex: "#FF0000" },
-  { name: "Green", hex: "#00FF00" },
-  { name: "Blue", hex: "#0000FF" },
-  { name: "Yellow", hex: "#FFFF00" },
-  { name: "Purple", hex: "#800080" },
+const paintSizes = [
+  { size: "5L", price: 14000 },
+  { size: "10L", price: 25000 },
+  { size: "20L", price: 45000 },
 ];
 
-export default function PaintShopWithNavbar() {
-  const [hue, setHue] = useState(45);
-  const [selectedColor, setSelectedColor] = useState(`hsl(${hue}, 100%, 50%)`);
-  const [selectedType, setSelectedType] = useState(null);
-  const [selectedSize, setSelectedSize] = useState("1L");
-  const [quantity, setQuantity] = useState(1);
+const paintTypes = ["Gloss", "Satin", "Emulsion", "Matte", "Silk"];
 
-  const handleHueChange = (e) => {
-    const newHue = e.target.value;
-    setHue(newHue);
-    setSelectedColor(`hsl(${newHue}, 100%, 50%)`);
+export default function Shop() {
+  const [selectedColor, setSelectedColor] = useState("#40BF56");
+  const [selectedType, setSelectedType] = useState("");
+  const [selectedSizes, setSelectedSizes] = useState({});
+  const [showPopup, setShowPopup] = useState(false);
+
+  const { addToCart } = usePaintCart();
+
+  const resetSelections = () => {
+    setSelectedColor("#40BF56");
+    setSelectedType("");
+    setSelectedSizes({});
   };
 
-  const getSizeScale = () => {
-    switch (selectedSize) {
-      case "1L": return 60;
-      case "2.5L": return 90;
-      case "5L": return 120;
-      case "10L": return 150;
-      default: return 60;
-    }
+  const updateSizeQuantity = (size, qty) => {
+    setSelectedSizes((prev) => {
+      const quantity = Math.max(0, qty);
+      if (quantity === 0) {
+        const updated = { ...prev };
+        delete updated[size];
+        return updated;
+      }
+      return {
+        ...prev,
+        [size]: { quantity },
+      };
+    });
   };
 
-  const calculatePrice = () => {
-    const basePrice = 4000;
-    const sizeMultiplier = {
-      "1L": 1,
-      "2.5L": 2.4,
-      "5L": 4.5,
-      "10L": 8.5,
-    };
-    const discountRate = 0.1; // 10% discount
-    const fullPrice = basePrice * sizeMultiplier[selectedSize] * quantity;
-    const discounted = fullPrice - fullPrice * discountRate;
-    return discounted.toLocaleString("en-NG", { style: "currency", currency: "NGN" });
-  };
+  const selectedTotal = Object.entries(selectedSizes).reduce((total, [size, { quantity }]) => {
+    const pricePerUnit = paintSizes.find((p) => p.size === size)?.price || 0;
+    return total + pricePerUnit * quantity;
+  }, 0);
 
-  const sizeScale = getSizeScale();
+  const handleAddToCart = () => {
+    if (!selectedType || Object.keys(selectedSizes).length === 0) return;
+
+    const cartItems = Object.entries(selectedSizes).map(([size, { quantity }]) => {
+      const price = paintSizes.find((p) => p.size === size)?.price || 0;
+      return {
+        color: selectedColor,
+        type: selectedType,
+        size,
+        quantity,
+        price,
+        total: price * quantity,
+      };
+    });
+console.log("👉 Sending to cart:", cartItems);
+    addToCart(cartItems);
+    setShowPopup(true);
+    setTimeout(() => setShowPopup(false), 2500);
+  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 mt-15">
-      <main className="flex flex-col lg:flex-row flex-1 gap-8 p-6">
+    <div className="min-h-screen bg-gray-50 pt-24 px-4 sm:px-6 lg:px-8 relative">
+      {showPopup && (
+        <div className="fixed top-6 right-6 bg-green-600 text-white py-2 px-4 rounded-lg shadow-md z-50">
+          ✅ Paint added to cart!
+        </div>
+      )}
 
-        {/* Left Sidebar */}
-        <aside className="w-full lg:w-1/3 bg-white p-6 rounded-lg shadow-md space-y-8">
-          <h2 className="text-xl font-bold mb-4">Choose a Color</h2>
-
-          <div className="grid grid-cols-4 gap-3 border p-3 rounded-md">
-            {presetColors.map((color) => (
-              <button
-                key={color.hex}
-                aria-label={color.name}
-                onClick={() => setSelectedColor(color.hex)}
-                className={`w-10 h-10 rounded-full border-4 transition ${
-                  selectedColor === color.hex ? "border-black" : "border-gray-300 hover:border-gray-400"
-                }`}
-                style={{ backgroundColor: color.hex }}
-              />
-            ))}
+      <div className="w-full flex flex-col lg:flex-row gap-8">
+        {/* Sidebar */}
+        <aside className="lg:w-1/4 bg-white rounded-xl shadow-lg p-6 space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-semibold text-gray-800">Customize</h2>
+            <button
+              onClick={resetSelections}
+              className="text-sm text-red-500 hover:underline"
+            >
+              Reset
+            </button>
           </div>
 
-          <div className="mt-6">
-            <label className="block text-sm font-semibold mb-2">Fine-tune Hue</label>
-            <input
-              type="range"
-              min="0"
-              max="360"
-              value={hue}
-              onChange={handleHueChange}
-              className="w-full"
-            />
-            <div className="mt-3 w-full h-10 rounded-md border" style={{ backgroundColor: selectedColor }}></div>
-            <p className="mt-2 text-center text-sm">{selectedColor.toUpperCase()}</p>
-          </div>
-
+          {/* Color Picker */}
           <div>
-            <h2 className="text-xl font-bold mb-4">Select Paint Type</h2>
-            <div className="flex flex-col gap-3">
+            <h3 className="font-semibold mb-2 text-gray-700">Color</h3>
+            <HexColorPicker color={selectedColor} onChange={setSelectedColor} />
+            <p className="mt-2 text-sm text-gray-600">
+              Selected:{" "}
+              <span className="font-mono bg-gray-100 px-2 py-1 rounded">
+                {selectedColor}
+              </span>
+            </p>
+          </div>
+
+          {/* Paint Type */}
+          <div>
+            <h3 className="font-semibold mb-2 text-gray-700">Type</h3>
+            <div className="flex flex-wrap gap-2">
               {paintTypes.map((type) => (
                 <button
                   key={type}
                   onClick={() => setSelectedType(type)}
-                  className={`px-4 py-2 rounded-md font-medium transition ${
-                    selectedType === type ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-blue-500 hover:text-white"
+                  className={`px-4 py-1.5 rounded-full border text-sm font-medium transition ${
+                    selectedType === type
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-100 text-gray-800 hover:bg-blue-500 hover:text-white"
                   }`}
                 >
                   {type}
@@ -103,82 +116,100 @@ export default function PaintShopWithNavbar() {
               ))}
             </div>
           </div>
+
+          {/* Summary */}
+          <div className="pt-4 border-t border-gray-200 space-y-3">
+            <h3 className="font-semibold text-gray-700">Summary</h3>
+            <div className="text-sm text-gray-700 space-y-1">
+              <p>
+                <strong>Color:</strong>{" "}
+                <span
+                  className="inline-block w-4 h-4 rounded-full mr-1 align-middle border"
+                  style={{ backgroundColor: selectedColor }}
+                ></span>
+                {selectedColor}
+              </p>
+              <p><strong>Type:</strong> {selectedType || "None"}</p>
+              {Object.entries(selectedSizes).length > 0 && (
+                <div className="space-y-1">
+                  <strong>Sizes:</strong>
+                  {Object.entries(selectedSizes).map(([size, { quantity }]) => (
+                    <p key={size}>
+                      {size} × {quantity}
+                    </p>
+                  ))}
+                </div>
+              )}
+              <p>
+                <strong>Total:</strong>{" "}
+                <span className="text-blue-600 font-semibold">
+                  ₦{selectedTotal.toLocaleString("en-NG")}
+                </span>
+              </p>
+            </div>
+
+            <button
+              onClick={handleAddToCart}
+              disabled={!selectedType || Object.keys(selectedSizes).length === 0}
+              className={`w-full py-2 mt-2 rounded-md font-semibold transition ${
+                selectedType && Object.keys(selectedSizes).length > 0
+                  ? "bg-green-600 text-white hover:bg-green-700"
+                  : "bg-gray-300 text-gray-600 cursor-not-allowed"
+              }`}
+            >
+              Add to Cart
+            </button>
+          </div>
         </aside>
 
-        {/* Middle Section */}
-        <section className="w-full lg:flex-1 bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
-          <h2 className="text-xl font-bold mb-6">Choose Paint Size</h2>
-          <div className="flex flex-wrap justify-center gap-4 mb-10">
-            {paintSizes.map((size) => (
-              <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={`px-5 py-3 rounded-md font-semibold transition ${
-                  selectedSize === size ? "bg-pink-600 text-white" : "bg-gray-200 text-gray-800 hover:bg-pink-500 hover:text-white"
+        {/* Paint Gallery */}
+        <section className="lg:w-3/4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          {paintSizes.map((bucket) => {
+            const isSelected = selectedSizes[bucket.size];
+            return (
+              <div
+                key={bucket.size}
+                className={`bg-white rounded-xl shadow-md p-4 transition border-2 ${
+                  isSelected ? "border-blue-600" : "border-transparent hover:border-gray-300"
                 }`}
               >
-                {size}
-              </button>
-            ))}
-          </div>
+                <div
+                  className="w-full h-40 rounded-md mb-4 bg-center bg-cover flex items-center justify-center"
+                  style={{
+                    backgroundColor: selectedColor,
+                    backgroundImage: "url(/path-to-bucket-image.jpg)",
+                    backgroundBlendMode: "multiply",
+                  }}
+                >
+                  <span className="text-white text-sm font-semibold bg-black/40 px-3 py-1 rounded">
+                    Preview
+                  </span>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-800">{bucket.size}</h3>
+                <p className="text-blue-600 font-bold mb-2">
+                  ₦{bucket.price.toLocaleString("en-NG")}
+                </p>
 
-          {/* Paint Bucket Preview */}
-          <div className="flex flex-col items-center">
-            <div
-              className="relative flex justify-center items-end border-4 border-gray-700 rounded-b-full overflow-hidden shadow-lg"
-              style={{
-                width: `${sizeScale}px`,
-                height: `${sizeScale * 1.5}px`,
-                backgroundColor: "#f0f0f0",
-              }}
-            >
-              <div
-                className="w-full absolute bottom-0 rounded-t-full"
-                style={{
-                  height: "50%",
-                  backgroundColor: selectedColor,
-                  transition: "background-color 0.3s ease",
-                }}
-              ></div>
-            </div>
-            <p className="mt-4 text-lg font-semibold">{selectedSize} Paint Can</p>
-            <p className="mt-1 text-gray-600">Color: {selectedColor.toUpperCase()}</p>
-            <p className="mt-1 text-gray-600">Paint Type: {selectedType || "None selected"}</p>
-            <div className="mt-4 flex items-center gap-3">
-              <label className="font-semibold">Quantity:</label>
-              <input
-                type="number"
-                min="1"
-                value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
-                className="w-20 border px-2 py-1 rounded-md"
-              />
-            </div>
-          </div>
+                <div className="flex items-center justify-between gap-2 mt-2">
+                  <label htmlFor={`qty-${bucket.size}`} className="text-sm">
+                    Qty:
+                  </label>
+                  <input
+                    id={`qty-${bucket.size}`}
+                    type="number"
+                    min="0"
+                    value={isSelected ? selectedSizes[bucket.size].quantity : 0}
+                    onChange={(e) =>
+                      updateSizeQuantity(bucket.size, parseInt(e.target.value) || 0)
+                    }
+                    className="w-20 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+              </div>
+            );
+          })}
         </section>
-
-        {/* Right Sidebar - Add to Cart */}
-        <aside className="w-full lg:w-1/4 bg-white p-6 rounded-lg shadow-md flex flex-col justify-center items-center space-y-6 mt-6 lg:mt-0">
-          <h2 className="text-xl font-bold">Order Summary</h2>
-          <p><strong>Color:</strong> {selectedColor.toUpperCase()}</p>
-          <p><strong>Paint Type:</strong> {selectedType || "None"}</p>
-          <p><strong>Size:</strong> {selectedSize}</p>
-          <p><strong>Quantity:</strong> {quantity}</p>
-          <p><strong>Total Price:</strong> {calculatePrice()}</p>
-
-          <button
-            disabled={!selectedColor || !selectedType}
-            className={`w-full py-3 rounded-md font-semibold transition ${
-              !selectedColor || !selectedType
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-green-600 hover:bg-green-700 text-white"
-            }`}
-            onClick={() => alert("Added to cart!")}
-          >
-            Add to Cart
-          </button>
-        </aside>
-      </main>
+      </div>
     </div>
   );
 }

@@ -1,31 +1,34 @@
 import React from "react";
 import Navbar from "./Components/Navbar";
-import Hero from "./Components/Hero";  // Importing Hero component
-import Footer from "./Components/Footer"; // Importing Footer component
-
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Hero from "./Components/Hero";
+import Footer from "./Components/Footer";
 import Gallery from "./Components/Gallary";
 import ContactSection from "./Components/Contactsection";
 import Shop from "./Components/Shop";
+import InspirationSection from "./Components/InspirationSection";
+
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { PaintCartProvider } from "./Context/PaintCart";
+import Cart from "./Components/Cart";
+import CheckoutPage from "./Components/Checkout";
+import ContactPainter from "./Components/ContactPainter";
 
 const App = () => {
   return (
-    <Router>
-      <Navbar /> {/* Navbar is always visible */}
-
-      <Routes>
-        {/* Route for the homepage */}
-        <Route path="/" element={<><Hero /><Gallery/></>} />
-
-        {/* Route for ContactSection */}
-        <Route path="/contact" element={<ContactSection/>} />
-      </Routes>
-      <Routes>
-        {/* Route for the shop page */}
-        <Route path="/shop" element={<Shop />} />
-      </Routes>
-      <Footer /> {/* Footer is always visible */}
-    </Router>
+    <PaintCartProvider>
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<><Hero /><Gallery /><InspirationSection /></>} />
+          <Route path="/contact" element={<ContactSection />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/painter-contact" element={<ContactPainter />} />
+        </Routes>
+        <Footer />
+      </Router>
+    </PaintCartProvider>
   );
 };
 
