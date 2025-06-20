@@ -5,7 +5,7 @@ import cors from "cors";
 import nodemailer from "nodemailer";
 
 // Import custom route
-import shopContactRoute from "./routes/shopContact.js";
+import shopContactRoute from "./routes/ShopContact";
 
 dotenv.config();
 
