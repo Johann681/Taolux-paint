@@ -8,7 +8,7 @@ import Shop from "./Components/Shop";
 import InspirationSection from "./Components/InspirationSection";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { PaintCartProvider } from "./Context/PaintCart.jsx";
+import { PaintCartProvider } from "./Context/PaintCart";
 import Cart from "./Components/Cart";
 import CheckoutPage from "./Components/Checkout";
 import ContactPainter from "./Components/ContactPainter";

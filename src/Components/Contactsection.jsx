@@ -1,119 +1,174 @@
-// components/ContactSection.tsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 const ContactSection = () => {
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem("shop-contact");
+    return saved
+      ? JSON.parse(saved)
+      : {
+          name: "",
+          email: "",
+          phone: "",
+          reason: "",
+          orderNumber: "",
+          productInfo: "",
+          message: "",
+        };
+  });
+
+  const [status, setStatus] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem("shop-contact", JSON.stringify(formData));
+  }, [formData]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    setStatus(null);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/shop-contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        setStatus("success");
+        localStorage.removeItem("shop-contact");
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          reason: "",
+          orderNumber: "",
+          productInfo: "",
+          message: "",
+        });
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <section className="pt-25 pb-12 bg-white text-gray-800">
+    <section className="pt-24 pb-12 bg-white text-gray-800">
       <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8 border rounded-2xl shadow-lg p-8">
-        {/* Left Side: Contact Info */}
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold text-gray-800">Contact Us</h2>
-          <p className="text-xs text-gray-600">
-            For inquiries or support, feel free to reach out.
+          <p className="text-sm text-gray-600">
+            We’re here to help. Whether you have a question about an order, need
+            product details, or just want to say hello — you’re in the right
+            place.
           </p>
-
-          <div>
-            <h3 className="text-sm font-semibold">Call Us</h3>
-            <p className="text-xs">Customer Service: <strong>0333 222 7171</strong></p>
-            <p className="text-xs text-gray-600">email@loremipsum.com</p>
-            <p className="text-xs">Order Support: <strong>0333 222 7676</strong></p>
-            <p className="text-xs text-gray-600">ordersupport@loremipsum.com</p>
-          </div>
-
-          <div className="mt-6">
-            <h3 className="text-sm font-semibold">Opening Hours</h3>
-            <p className="text-xs">Mon - Fri: 8:30 AM - 5:00 PM</p>
-            <p className="text-xs">Sat: 9:00 AM - 12:30 PM</p>
-          </div>
-
-          <div className="mt-6">
-            <a
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:underline text-xs"
-            >
-              Our Commitment to You
-            </a>
-          </div>
-
-          <div className="mt-6">
-            <h3 className="text-sm font-semibold">Write to Us</h3>
-            <p className="text-xs">Lorem Ipsum Customer Care Centre</p>
-            <p className="text-xs">123 Ipsum Road, Dolor City, AB1 2CD, United Kingdom</p>
-          </div>
         </div>
 
-        {/* Right Side: Contact Form */}
-        <form className="space-y-6 border rounded-xl p-8 shadow-inner bg-gray-50">
-          <h2 className="text-xl font-semibold mb-4">Get in Touch</h2>
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6 border rounded-xl p-8 shadow-inner bg-gray-50"
+        >
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Full Name"
+            required
+            className="w-full text-xs mt-1 border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
-          <div>
-            <label className="block text-xs font-medium">Name <span className="text-red-500">*</span></label>
-            <input
-              type="text"
-              required
-              className="w-full mt-1 border px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
-            />
-          </div>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Email Address"
+            required
+            className="w-full text-xs mt-1 border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
-          <div>
-            <label className="block text-xs font-medium">Email Address <span className="text-red-500">*</span></label>
-            <input
-              type="email"
-              required
-              className="w-full mt-1 border px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
-            />
-          </div>
+          <input
+            type="tel"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="Phone Number"
+            className="w-full text-xs mt-1 border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
-          <div>
-            <label className="block text-xs font-medium">Phone Number</label>
-            <input
-              type="tel"
-              className="w-full mt-1 border px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
-            />
-          </div>
+          <select
+            name="reason"
+            value={formData.reason}
+            onChange={handleChange}
+            required
+            className="w-full text-xs mt-1 border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select a reason</option>
+            <option value="General Inquiry">General Inquiry</option>
+            <option value="Order Issue">Order Issue</option>
+            <option value="Product Information">Product Information</option>
+            <option value="Return / Refund">Return / Refund</option>
+          </select>
 
-          <div>
-            <label className="block text-xs font-medium">Reason for Contacting Us <span className="text-red-500">*</span></label>
-            <input
-              type="text"
-              required
-              className="w-full mt-1 border px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
-            />
-          </div>
+          <input
+            type="text"
+            name="orderNumber"
+            value={formData.orderNumber}
+            onChange={handleChange}
+            placeholder="Order Number (if applicable)"
+            className="w-full text-xs mt-1 border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
-          <div>
-            <label className="block text-xs font-medium">Order Number (if applicable)</label>
-            <input
-              type="text"
-              className="w-full mt-1 border px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
-            />
-          </div>
+          <input
+            type="text"
+            name="productInfo"
+            value={formData.productInfo}
+            onChange={handleChange}
+            placeholder="Product Name / Barcode / Batch Number"
+            className="w-full text-xs mt-1 border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
-          <div>
-            <label className="block text-xs font-medium">Product Name / Barcode / Batch Number (if available)</label>
-            <input
-              type="text"
-              className="w-full mt-1 border px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium">Your Message <span className="text-red-500">*</span></label>
-            <textarea
-              required
-              rows={4}
-              className="w-full mt-1 border px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
-            />
-          </div>
+          <textarea
+            name="message"
+            value={formData.message}
+            onChange={handleChange}
+            required
+            rows="4"
+            placeholder="Your Message"
+            className="w-full text-xs mt-1 border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          />
 
           <button
             type="submit"
+            disabled={isSubmitting}
             className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition text-xs"
           >
-            Submit
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
+
+          {status === "success" && (
+            <p className="text-green-600 text-xs font-medium mt-2">
+              Thanks for reaching out! We'll get back to you shortly.
+            </p>
+          )}
+          {status === "error" && (
+            <p className="text-red-600 text-xs font-medium mt-2">
+              Something went wrong. Please try again later.
+            </p>
+          )}
         </form>
       </div>
     </section>

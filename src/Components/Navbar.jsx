@@ -1,13 +1,21 @@
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, Home, ShoppingBag, Phone, User2, ShoppingCart } from "lucide-react";
+import {
+  Menu,
+  X,
+  Home,
+  ShoppingBag,
+  Phone,
+  User2,
+  ShoppingCart,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
-import { usePaintCart } from "../Context/PaintCart";
+import { usePaintCart } from "../Context/PaintCart.jsx";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
-  const { cartCount } = usePaintCart(); // ✅ Use cart count
+  const { cartCount } = usePaintCart();
 
   const lastScrollY = useRef(0);
 
@@ -30,8 +38,12 @@ const Navbar = () => {
   const navLinks = [
     { name: "Home", icon: <Home size={18} />, path: "/" },
     { name: "Shop", icon: <ShoppingBag size={18} />, path: "/shop" },
-    { name: "Contact", icon: <Phone size={18} />, path: "/contact" },
-    { name: "Contact a Painter", icon: <User2 size={18} />, path: "/painter-contact" },
+    {
+      name: "Contact a Painter",
+      icon: <User2 size={18} />,
+      path: "/painter-contact",
+    },
+    { name: "Contact us", icon: <Phone size={18} />, path: "/contact" },
   ];
 
   return (
@@ -44,11 +56,27 @@ const Navbar = () => {
     >
       <div className="max-w-6xl mx-auto flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <img src={logo} alt="Taolux Logo" className="h-8 w-8 object-contain" />
-          <span className="text-2xl font-bold text-blue-700 tracking-wide">Taolux</span>
+          <img
+            src={logo}
+            alt="Taolux Logo"
+            className="h-8 w-8 object-contain"
+          />
+          <span className="text-2xl font-bold text-blue-700 tracking-wide">
+            Taolux
+          </span>
         </div>
 
-        <div className="md:hidden">
+        <div className="flex items-center gap-4 md:hidden">
+          {/* Mobile Cart Icon */}
+          <Link to="/cart" className="relative">
+            <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-blue-600 transition" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="text-blue-700 focus:outline-none"
@@ -100,23 +128,6 @@ const Navbar = () => {
               </Link>
             </li>
           ))}
-
-          {/* Mobile Cart Icon */}
-          <li>
-            <Link
-              to="/cart"
-              className="flex items-center gap-2 text-[17px] font-semibold text-gray-700 hover:text-blue-600"
-              onClick={() => setIsOpen(false)}
-            >
-              <ShoppingCart className="w-5 h-5" />
-              Cart
-              {cartCount > 0 && (
-                <span className="ml-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
-          </li>
         </ul>
       )}
     </nav>

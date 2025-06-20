@@ -1,5 +1,5 @@
 import React from "react";
-import { usePaintCart } from "../Context/PaintCart.jsx";
+import { usePaintCart } from "../Context/PaintCart";
 import { useNavigate } from "react-router-dom";
 
 export default function CartPage() {
