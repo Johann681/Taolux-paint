@@ -1,14 +1,18 @@
-// src/pages/Login.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-const API_URL = "https://taolux-paint.onrender.com"; // 👈 Hardcoded Render URL
+import { toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+
+  const API_URL = "https://taolux-paint.onrender.com";
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) navigate("/");
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -17,7 +21,6 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
 
     try {
       const res = await fetch(`${API_URL}/api/login`, {
@@ -27,16 +30,14 @@ const Login = () => {
       });
 
       const data = await res.json();
-      console.log("✅ Login Response:", data);
 
-      if (!res.ok) {
-        throw new Error(data.message || "Login failed");
-      }
+      if (!res.ok) throw new Error(data.message || "Login failed");
 
       localStorage.setItem("user", JSON.stringify(data.user));
-      window.location.href = "/"; // ✅ redirect + refresh
+      toast.success(`Welcome back, ${data.user.name}!`);
+      navigate("/");
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
@@ -45,9 +46,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white shadow-xl rounded-xl p-6 space-y-6">
-        <h2 className="text-2xl font-bold text-center text-blue-700">Login to Your Account</h2>
-
-        {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+        <h2 className="text-2xl font-bold text-center text-blue-700">Welcome Back</h2>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <input
@@ -72,7 +71,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-12 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition"
+            className="w-full h-12 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 transition duration-200"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
