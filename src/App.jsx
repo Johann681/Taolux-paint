@@ -6,12 +6,14 @@ import Gallery from "./Components/Gallary";
 import ContactSection from "./Components/Contactsection";
 import Shop from "./Components/Shop";
 import InspirationSection from "./Components/InspirationSection";
+import Register from "./Components/Register";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { PaintCartProvider } from "./Context/PaintCart";
 import Cart from "./Components/Cart";
 import CheckoutPage from "./Components/Checkout";
 import ContactPainter from "./Components/ContactPainter";
+import Login from "./Components/Login";
 
 const App = () => {
   return (
@@ -25,6 +27,8 @@ const App = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/painter-contact" element={<ContactPainter />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login/>} />
         </Routes>
         <Footer />
       </Router>

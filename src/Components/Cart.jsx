@@ -62,7 +62,7 @@ export default function CartPage() {
                   onClick={clearCart}
                   className="bg-red-100 text-red-600 font-medium px-4 py-2 rounded-lg hover:bg-red-200 transition"
                 >
-                  Clear Cartie
+                  Empty Cart
                 </button>
                 <button
                   onClick={handleCheckout}

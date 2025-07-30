@@ -7,16 +7,20 @@ import {
   Phone,
   User2,
   ShoppingCart,
+  LogOut,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
+import peepImg from "../assets/peeps.jpg"; //// Put this in /public
 import { usePaintCart } from "../Context/PaintCart.jsx";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
-  const { cartCount } = usePaintCart();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState({ name: "", image: peepImg });
 
+  const { cartCount } = usePaintCart();
   const lastScrollY = useRef(0);
 
   const handleScroll = () => {
@@ -29,11 +33,18 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser?.name) {
+      setUser({ ...storedUser, image: peepImg });
+      setIsLoggedIn(true);
+    }
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    setUser({ name: "", image: peepImg });
+  };
 
   const navLinks = [
     { name: "Home", icon: <Home size={18} />, path: "/" },
@@ -55,6 +66,7 @@ const Navbar = () => {
       } p-4`}
     >
       <div className="max-w-6xl mx-auto flex justify-between items-center">
+        {/* Logo */}
         <div className="flex items-center gap-2">
           <img
             src={logo}
@@ -66,8 +78,9 @@ const Navbar = () => {
           </span>
         </div>
 
+        {/* Mobile Icons */}
         <div className="flex items-center gap-4 md:hidden">
-          {/* Mobile Cart Icon */}
+          {/* Cart Icon */}
           <Link to="/cart" className="relative">
             <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-blue-600 transition" />
             {cartCount > 0 && (
@@ -77,6 +90,7 @@ const Navbar = () => {
             )}
           </Link>
 
+          {/* Hamburger Menu */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="text-blue-700 focus:outline-none"
@@ -85,7 +99,7 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Desktop Nav Links */}
+        {/* Desktop Nav */}
         <ul className="hidden md:flex items-center space-x-8">
           {navLinks.map(({ name, icon, path }) => (
             <li
@@ -100,7 +114,7 @@ const Navbar = () => {
             </li>
           ))}
 
-          {/* Cart Icon (Desktop) */}
+          {/* Cart Icon */}
           <li className="relative">
             <Link to="/cart" className="flex items-center">
               <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-blue-600 transition" />
@@ -111,6 +125,40 @@ const Navbar = () => {
               )}
             </Link>
           </li>
+
+          {/* User Info */}
+          {isLoggedIn ? (
+            <li className="flex items-center gap-2">
+              <img
+                src={user.image}
+                alt="User"
+                className="w-8 h-8 rounded-full"
+              />
+              <span className="text-gray-700 font-medium">{user.name}</span>
+              <button
+                onClick={handleLogout}
+                title="Logout"
+                className="text-red-600 hover:text-red-800"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+            </li>
+          ) : (
+            <li className="flex gap-3">
+              <Link
+                to="/login"
+                className="px-3 py-1 text-sm bg-gray-800 text-white rounded-full hover:bg-black transition"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="px-3 py-1 text-sm border border-gray-800 text-gray-800 rounded-full hover:bg-gray-800 hover:text-white transition"
+              >
+                Register
+              </Link>
+            </li>
+          )}
         </ul>
       </div>
 
@@ -128,6 +176,39 @@ const Navbar = () => {
               </Link>
             </li>
           ))}
+
+          {/* Auth Buttons on Mobile */}
+          {isLoggedIn ? (
+            <li className="flex items-center gap-2 mt-2">
+              <img
+                src={user.image}
+                alt="User"
+                className="w-8 h-8 rounded-full"
+              />
+              <span className="text-gray-700 font-medium">{user.name}</span>
+              <button
+                onClick={handleLogout}
+                className="text-red-600 hover:text-red-800 ml-auto"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+            </li>
+          ) : (
+            <li className="flex gap-2 mt-2">
+              <Link
+                to="/login"
+                className="flex-1 px-3 py-1 text-sm bg-gray-800 text-white rounded-full text-center"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="flex-1 px-3 py-1 text-sm border border-gray-800 text-gray-800 rounded-full text-center"
+              >
+                Register
+              </Link>
+            </li>
+          )}
         </ul>
       )}
     </nav>

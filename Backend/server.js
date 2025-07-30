@@ -1,15 +1,19 @@
+// server.js
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import nodemailer from "nodemailer";
 
-// Import custom route
+// Routes
 import shopContactRoute from "./routes/ShopContact.js";
+import authRoutes from "./routes/auth.js"; // 👈 Add this
 
 dotenv.config();
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 
@@ -21,6 +25,12 @@ mongoose
   })
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
+
+// 🧾 Register/Login Auth Routes
+app.use("/api", authRoutes); // 👈 Login/Register
+
+// 🛒 Shop Contact Route (saves to DB + sends mail)
+app.use("/api/shop-contact", shopContactRoute);
 
 // 🎨 Painter Contact Route (sends email only)
 app.post("/api/contact", async (req, res) => {
@@ -50,9 +60,8 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
-// 🛒 Shop Contact Route (saves to DB + sends mail)
-app.use("/api/shop-contact", shopContactRoute);
-
 // 🚀 Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () =>
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+);
