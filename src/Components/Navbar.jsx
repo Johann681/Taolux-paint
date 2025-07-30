@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
-import peepImg from "../assets/peeps.jpg"; //// Put this in /public
+import peepImg from "../assets/peeps.jpg"; // Make sure this is in your public/assets
 import { usePaintCart } from "../Context/PaintCart.jsx";
 
 const Navbar = () => {
@@ -19,6 +19,7 @@ const Navbar = () => {
   const [showNavbar, setShowNavbar] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState({ name: "", image: peepImg });
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 
   const { cartCount } = usePaintCart();
   const lastScrollY = useRef(0);
@@ -38,12 +39,16 @@ const Navbar = () => {
       setUser({ ...storedUser, image: peepImg });
       setIsLoggedIn(true);
     }
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleLogout = () => {
+  const confirmLogout = () => {
     localStorage.removeItem("user");
     setIsLoggedIn(false);
     setUser({ name: "", image: peepImg });
+    setShowLogoutPopup(false);
   };
 
   const navLinks = [
@@ -136,7 +141,7 @@ const Navbar = () => {
               />
               <span className="text-gray-700 font-medium">{user.name}</span>
               <button
-                onClick={handleLogout}
+                onClick={() => setShowLogoutPopup(true)}
                 title="Logout"
                 className="text-red-600 hover:text-red-800"
               >
@@ -187,7 +192,7 @@ const Navbar = () => {
               />
               <span className="text-gray-700 font-medium">{user.name}</span>
               <button
-                onClick={handleLogout}
+                onClick={() => setShowLogoutPopup(true)}
                 className="text-red-600 hover:text-red-800 ml-auto"
               >
                 <LogOut className="w-5 h-5" />
@@ -211,8 +216,33 @@ const Navbar = () => {
           )}
         </ul>
       )}
+
+      {/* 🔥 Logout Confirmation Popup */}
+      {showLogoutPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-xl p-6 shadow-xl w-full max-w-sm">
+            <h2 className="text-xl font-bold text-gray-800 mb-3">Confirm Logout</h2>
+            <p className="text-gray-600 mb-5">Are you sure you want to log out?</p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowLogoutPopup(false)}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Yes, Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
 
 export default Navbar;
+git 
