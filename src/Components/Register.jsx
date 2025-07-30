@@ -1,6 +1,9 @@
+// src/pages/Register.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import livingroom7 from "../assets/livingroom7.jpg";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Register = () => {
   const navigate = useNavigate();
@@ -22,19 +25,20 @@ const Register = () => {
     setError("");
 
     try {
-      const res = await fetch("https://taolux-paint.onrender.com/api/register", {
+      const res = await fetch(`${API_URL}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
 
       const data = await res.json();
+      console.log("✅ Register Response:", data);
 
       if (!res.ok) {
         throw new Error(data.message || "Registration failed");
       }
 
-      alert("✅ Account successfully created!");
+      alert("✅ Registered successfully! Proceed to login.");
       navigate("/login");
     } catch (err) {
       setError(err.message);
@@ -79,6 +83,7 @@ const Register = () => {
             required
           />
 
+          {/* Button styled with background image */}
           <button
             type="submit"
             disabled={loading}
