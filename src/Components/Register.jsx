@@ -1,9 +1,7 @@
-// src/pages/Register.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import livingroom7 from "../assets/livingroom7.jpg";
-
-const API_URL = "https://taolux-paint.onrender.com"; // 👈 Hardcoded Render URL
 
 const Register = () => {
   const navigate = useNavigate();
@@ -13,7 +11,8 @@ const Register = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+
+  const API_URL = "https://taolux-paint.onrender.com"; // your backend
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -22,7 +21,6 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
 
     try {
       const res = await fetch(`${API_URL}/api/register`, {
@@ -32,16 +30,15 @@ const Register = () => {
       });
 
       const data = await res.json();
-      console.log("✅ Register Response:", data);
 
       if (!res.ok) {
         throw new Error(data.message || "Registration failed");
       }
 
-      alert("✅ Registered successfully! Proceed to login.");
+      toast.success("Account created! Please log in.");
       navigate("/login");
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
@@ -50,9 +47,9 @@ const Register = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white shadow-xl rounded-xl p-6 space-y-6">
-        <h2 className="text-2xl font-bold text-center text-blue-700">Create Your Account</h2>
-
-        {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+        <h2 className="text-2xl font-bold text-center text-blue-700">
+          Create Your Account
+        </h2>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <input
@@ -90,7 +87,9 @@ const Register = () => {
             className="relative overflow-hidden h-12 w-full rounded-md bg-cover bg-center transform transition-transform hover:scale-[1.015] focus:outline-none"
             style={{ backgroundImage: `url(${livingroom7})` }}
           >
+            {/* dark overlay */}
             <span className="absolute inset-0 bg-black/40" />
+            {/* button text */}
             <span className="relative z-10 text-white font-semibold text-lg">
               {loading ? "Registering..." : "Register"}
             </span>
