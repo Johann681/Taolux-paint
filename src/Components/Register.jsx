@@ -1,4 +1,3 @@
-// src/pages/Register.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import livingroom7 from "../assets/livingroom7.jpg";
@@ -35,9 +34,8 @@ const Register = () => {
         throw new Error(data.message || "Registration failed");
       }
 
-      // Save user in localStorage
-      localStorage.setItem("user", JSON.stringify(data.user));
-      navigate("/"); // redirect to home
+      alert("✅ Account successfully created!");
+      navigate("/login");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -81,7 +79,6 @@ const Register = () => {
             required
           />
 
-          {/* Register Button with background image */}
           <button
             type="submit"
             disabled={loading}

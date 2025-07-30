@@ -1,7 +1,5 @@
-// src/pages/Login.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import livingroom6 from "../assets/livingroom6.jpg"; // You can switch the image if you want
 
 const Login = () => {
   const navigate = useNavigate();
@@ -22,20 +20,22 @@ const Login = () => {
     setError("");
 
     try {
-      // 🛠 Replace with real API call later
-      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const res = await fetch("https://taolux-paint.onrender.com/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-      if (
-        storedUser &&
-        storedUser.email === form.email
-      ) {
-        // Fake login logic — just compare email match
-        navigate("/");
-      } else {
-        throw new Error("Invalid credentials.");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Login failed");
       }
+
+      localStorage.setItem("user", JSON.stringify(data.user));
+      window.location.reload(); // refresh to update navbar
     } catch (err) {
-      setError(err.message || "Login failed.");
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -68,17 +68,12 @@ const Login = () => {
             required
           />
 
-          {/* Button with image background */}
           <button
             type="submit"
             disabled={loading}
-            className="relative overflow-hidden h-12 w-full rounded-md bg-cover bg-center transform transition-transform hover:scale-[1.015] focus:outline-none"
-            style={{ backgroundImage: `url(${livingroom6})` }}
+            className="h-12 w-full rounded-md bg-blue-600 text-white font-semibold text-lg hover:bg-blue-700 transition"
           >
-            <span className="absolute inset-0 bg-black/40" />
-            <span className="relative z-10 text-white font-semibold text-lg">
-              {loading ? "Logging in..." : "Login"}
-            </span>
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
