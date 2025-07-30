@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = "https://taolux-paint.onrender.com"; // 👈 Hardcoded Render URL
 
 const Login = () => {
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ const Login = () => {
       }
 
       localStorage.setItem("user", JSON.stringify(data.user));
-      window.location.href = "/"; // Refresh and redirect
+      window.location.href = "/"; // ✅ redirect + refresh
     } catch (err) {
       setError(err.message);
     } finally {

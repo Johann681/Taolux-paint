@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import livingroom7 from "../assets/livingroom7.jpg";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = "https://taolux-paint.onrender.com"; // 👈 Hardcoded Render URL
 
 const Register = () => {
   const navigate = useNavigate();
