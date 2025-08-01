@@ -1,3 +1,4 @@
+// Backend/routes/auth.js
 import express from "express";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
@@ -19,8 +20,6 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
 
     const hashed = await bcrypt.hash(password, 10);
-
-    // Generate verification token
     const emailToken = crypto.randomBytes(32).toString("hex");
 
     const newUser = new User({
@@ -114,3 +113,4 @@ router.post("/verify-email", async (req, res) => {
   }
 });
 
+export default router; // ✅ important for Render
