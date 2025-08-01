@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // ✅ import Link
 import { toast } from "react-toastify";
 import livingroom7 from "../assets/livingroom7.jpg";
 
@@ -98,9 +98,9 @@ const Register = () => {
 
         <p className="text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-600 font-medium hover:underline">
+          <Link to="/login" className="text-blue-600 font-medium hover:underline">
             Login
-          </a>
+          </Link>
         </p>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // ✅ Include Link
 import { toast } from "react-toastify";
 
 const Login = () => {
@@ -79,9 +79,9 @@ const Login = () => {
 
         <p className="text-center text-sm text-gray-600">
           Don’t have an account?{" "}
-          <a href="/register" className="text-blue-600 font-medium hover:underline">
+          <Link to="/register" className="text-blue-600 font-medium hover:underline">
             Register
-          </a>
+          </Link>
         </p>
       </div>
     </div>
