@@ -11,6 +11,7 @@ import Login from "./Components/Login";
 import Cart from "./Components/Cart";
 import CheckoutPage from "./Components/Checkout";
 import ContactPainter from "./Components/ContactPainter";
+import Verify from "./Components/Verify";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { PaintCartProvider } from "./Context/PaintCart";
@@ -32,6 +33,10 @@ const App = () => {
           <Route path="/painter-contact" element={<ContactPainter />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          
+<Route path="/verify" element={<Verify />} />
+
+          {/* Add more routes as needed */}
         </Routes>
         <Footer />
         <ToastContainer position="top-center" theme="colored" autoClose={2500} /> {/* 👈 Toast */}
