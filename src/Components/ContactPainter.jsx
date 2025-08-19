@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 import livingroom3 from "../assets/livingroom3.jpg";
 import outdoor4 from "../assets/outdoor4.jpg";
@@ -23,6 +24,7 @@ export default function ContactPainter() {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
       setStatus("error");
+      toast.error("❌ Please complete all required fields.");
       return;
     }
 
@@ -42,13 +44,16 @@ export default function ContactPainter() {
       const data = await res.json();
       if (res.ok) {
         setStatus("success");
+        toast.success("✅ Thanks for reaching out! We’ll be in touch within 24 hours.");
         setFormData({ name: "", email: "", phone: "", message: "" });
       } else {
         setStatus("error");
+        toast.error("❌ Something went wrong. Please try again later.");
         console.error(data.error);
       }
     } catch (err) {
       setStatus("error");
+      toast.error("❌ Network error. Please try again later.");
       console.error(err);
     }
   };
@@ -180,7 +185,7 @@ export default function ContactPainter() {
               Contact a Painter
             </button>
 
-            {/* Status Message */}
+            {/* Status Message (still here if you want inline feedback too) */}
             {status === "success" && (
               <p className="text-green-600 font-medium mt-3">
                 ✅ Thanks for reaching out! We’ll be in touch within 24 hours.
