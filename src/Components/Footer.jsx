@@ -14,7 +14,7 @@ const Footer = () => {
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
         {/* Left */}
         <div className="text-center sm:text-left">
-          <h3 className="font-semibold text-blue-100 text-sm">Toaluxe Paintings</h3>
+          <h3 className="font-semibold text-blue-100 text-sm">Taoluxe Paintings</h3>
           <p>Luxury painting for classy spaces ✨</p>
         </div>
 
